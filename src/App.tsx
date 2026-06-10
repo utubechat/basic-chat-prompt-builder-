@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { Message } from "./types";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
@@ -11,6 +12,10 @@ import { GitHubModal } from "./components/GitHubModal";
 import { TemplatesModal } from "./components/TemplatesModal";
 import { GalleryModal } from "./components/GalleryModal";
 import { ApiTester } from "./components/ApiTester";
+import { LandingPage } from "./components/LandingPage";
+import { SecretsModal } from "./components/SecretsModal";
+import { SupabaseModal } from "./components/SupabaseModal";
+import { PricingModal, PricingPlan } from "./components/PricingModal";
 
 const INITIAL_CODE = `export default function App() {
   return (
@@ -27,6 +32,7 @@ const INITIAL_CODE = `export default function App() {
 }`;
 
 export default function App() {
+  const [isStarted, setIsStarted] = useState(false);
   const [activeTab, setActiveTab] = useState<
     "split" | "code" | "preview" | "api"
   >("split");
@@ -44,19 +50,39 @@ export default function App() {
   const [isGitHubOpen, setIsGitHubOpen] = useState(false);
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [isSecretsOpen, setIsSecretsOpen] = useState(false);
+  const [isSupabaseOpen, setIsSupabaseOpen] = useState(false);
+  const [isPricingOpen, setIsPricingOpen] = useState(false);
+  const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([
+    {
+      id: "1",
+      name: "Community",
+      price: "Free",
+      description: "For hobbyists and learners.",
+      features: ["Llama 3 8B model access", "Public galleries", "Community support"]
+    },
+    {
+      id: "2",
+      name: "Pro",
+      price: "$15/mo",
+      description: "For professional developers.",
+      features: ["Godmode: Llama 3 Lexi & GPT-4o", "Private Supabase connections", "Unlimited projects", "Priority support"]
+    }
+  ]);
+  const [secrets, setSecrets] = useState<{key: string, value: string}[]>([]);
+  const [activeModel, setActiveModel] = useState("Default");
   const [adminUser, setAdminUser] = useState<string | null>(
     "nexusos@commandnexus.net",
   );
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content:
-        "Hello! I am your AI Builder. What would you like to create today?",
-      timestamp: Date.now(),
-    },
-  ]);
+  // Model access logic
+  const availableModels = adminUser 
+    ? ["Default", "llama3-lexi", "mixtral", "gpt-4o"] 
+    : ["Default", "llama3.1-8b"];
+
+  const isSupabaseConnected = secrets.some(s => s.key === "SUPABASE_URL" && s.value.trim() !== "");
+
+  const [messages, setMessages] = useState<Message[]>([]);
   const [code, setCode] = useState(INITIAL_CODE);
 
   useEffect(() => {
@@ -92,6 +118,26 @@ export default function App() {
     }, 800);
   };
 
+  const handleStart = (prompt: string) => {
+    setMessages([
+      {
+        id: "sys_1",
+        role: "assistant",
+        content: `I'll help you build: "${prompt}". Setting up the workspace now...`,
+        timestamp: Date.now(),
+      }
+    ]);
+    setIsStarted(true);
+  };
+
+  if (!isStarted) {
+    return (
+      <div style={{ "--color-primary": accentColor } as React.CSSProperties}>
+        <LandingPage onStart={handleStart} />
+      </div>
+    );
+  }
+
   return (
     <div
       className="flex w-full h-full bg-[#0a0a0a] text-gray-200"
@@ -109,35 +155,60 @@ export default function App() {
           onGitHubClick={() => setIsGitHubOpen(true)}
           onTemplatesClick={() => setIsTemplatesOpen(true)}
           onGalleryClick={() => setIsGalleryOpen(true)}
+          onSecretsClick={() => setIsSecretsOpen(true)}
+          onSupabaseClick={() => setIsSupabaseOpen(true)}
+          onPricingClick={() => setIsPricingOpen(true)}
+          isSupabaseConnected={isSupabaseConnected}
           adminUser={adminUser}
           onLoginClick={() => setIsLoginOpen(true)}
           onLogout={() => setAdminUser(null)}
+          models={availableModels}
+          activeModel={activeModel}
+          onModelChange={setActiveModel}
         />
 
         {/* Workspace Grid */}
-        <div
-          className={`flex-1 min-h-0 bg-[#050505] ${activeTab === "split" ? "grid grid-cols-2" : "flex flex-col"}`}
-        >
-          {(activeTab === "split" || activeTab === "code") && (
-            <div
-              className={`relative min-h-0 flex flex-col ${activeTab === "split" ? "border-r border-zinc-800" : "flex-1"}`}
-            >
-              <CodeEditor code={code} onChange={(v) => setCode(v || "")} />
-            </div>
-          )}
+        <div className="flex-1 min-h-0 bg-[#050505] flex overflow-hidden">
+          <AnimatePresence initial={false}>
+            {(activeTab === "split" || activeTab === "code") && (
+              <motion.div
+                key="code"
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: activeTab === "split" ? "50%" : "100%" }}
+                exit={{ opacity: 0, width: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className={`relative min-h-0 flex flex-col ${activeTab === "split" ? "border-r border-zinc-800" : ""}`}
+              >
+                <CodeEditor code={code} onChange={(v) => setCode(v || "")} />
+              </motion.div>
+            )}
 
-          {(activeTab === "split" || activeTab === "preview") && (
-            <div
-              className={`relative min-h-0 flex flex-col bg-[#111] ${activeTab === "preview" ? "flex-1" : ""}`}
-            >
-              <Preview />
-            </div>
-          )}
-          {activeTab === "api" && (
-            <div className="relative min-h-0 flex flex-col flex-1">
-              <ApiTester />
-            </div>
-          )}
+            {(activeTab === "split" || activeTab === "preview") && (
+              <motion.div
+                key="preview"
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: activeTab === "split" ? "50%" : "100%" }}
+                exit={{ opacity: 0, width: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="relative min-h-0 flex flex-col bg-[#111]"
+              >
+                <Preview />
+              </motion.div>
+            )}
+
+            {activeTab === "api" && (
+              <motion.div
+                key="api"
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "100%" }}
+                exit={{ opacity: 0, width: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="relative min-h-0 flex flex-col flex-1"
+              >
+                <ApiTester />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Footer Info */}
@@ -177,10 +248,14 @@ export default function App() {
       {isGitHubOpen && (
         <GitHubModal
           onClose={() => setIsGitHubOpen(false)}
-          onPush={(repo, branch, commitMsg) => {
-            console.log(
-              `Pushed to ${repo} branch ${branch} with msg: ${commitMsg}`,
-            );
+          code={code}
+          githubToken={secrets.find(s => s.key === "GITHUB_TOKEN")?.value}
+          onSaveToken={(token) => {
+            const newSecrets = [
+              ...secrets.filter(s => s.key !== "GITHUB_TOKEN"),
+              { key: "GITHUB_TOKEN", value: token }
+            ];
+            setSecrets(newSecrets);
           }}
         />
       )}
@@ -189,6 +264,37 @@ export default function App() {
         <TemplatesModal
           onClose={() => setIsTemplatesOpen(false)}
           onSelect={(newCode) => setCode(newCode)}
+        />
+      )}
+
+      {isSecretsOpen && (
+        <SecretsModal
+          onClose={() => setIsSecretsOpen(false)}
+          secrets={secrets}
+          onSave={setSecrets}
+        />
+      )}
+
+      {isSupabaseOpen && (
+        <SupabaseModal
+          onClose={() => setIsSupabaseOpen(false)}
+          onConnect={(url, key) => {
+            const newSecrets = [
+              ...secrets.filter(s => s.key !== "SUPABASE_URL" && s.key !== "SUPABASE_ANON_KEY"),
+              { key: "SUPABASE_URL", value: url },
+              { key: "SUPABASE_ANON_KEY", value: key }
+            ];
+            setSecrets(newSecrets);
+          }}
+        />
+      )}
+
+      {isPricingOpen && (
+        <PricingModal
+          onClose={() => setIsPricingOpen(false)}
+          isAdmin={adminUser !== null}
+          plans={pricingPlans}
+          onUpdatePlans={setPricingPlans}
         />
       )}
 

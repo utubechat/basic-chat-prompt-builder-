@@ -14,6 +14,8 @@ import {
   Shield,
   LayoutTemplate,
   LibraryBig,
+  Key,
+  CreditCard,
 } from "lucide-react";
 
 export function TopBar({
@@ -25,9 +27,16 @@ export function TopBar({
   onGitHubClick,
   onTemplatesClick,
   onGalleryClick,
+  onSecretsClick,
+  onSupabaseClick,
+  onPricingClick,
+  isSupabaseConnected,
   adminUser,
   onLoginClick,
   onLogout,
+  models,
+  activeModel,
+  onModelChange,
 }: {
   activeTab: "split" | "code" | "preview" | "api";
   onTabChange: (tab: "split" | "code" | "preview" | "api") => void;
@@ -37,9 +46,16 @@ export function TopBar({
   onGitHubClick: () => void;
   onTemplatesClick: () => void;
   onGalleryClick: () => void;
+  onSecretsClick: () => void;
+  onSupabaseClick: () => void;
+  onPricingClick: () => void;
+  isSupabaseConnected?: boolean;
   adminUser: string | null;
   onLoginClick: () => void;
   onLogout: () => void;
+  models: string[];
+  activeModel: string;
+  onModelChange: (model: string) => void;
 }) {
   return (
     <nav className="h-12 bg-[#0a0a0a] border-b border-zinc-800 flex items-center px-4 gap-6 shrink-0">
@@ -153,6 +169,38 @@ export function TopBar({
           </button>
         )}
 
+        <select
+          value={activeModel}
+          onChange={(e) => onModelChange(e.target.value)}
+          className="bg-zinc-900 border border-zinc-800 text-zinc-300 text-[10px] font-mono px-2 py-1 rounded outline-none focus:border-zinc-500 mr-2"
+        >
+          {models.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={onSecretsClick}
+          className="text-zinc-500 hover:text-zinc-300 transition-colors p-1"
+          title="Manage Secrets"
+        >
+          <Key size={14} />
+        </button>
+
+        <button
+          onClick={() => {
+            // Simulated download
+            console.log("Downloading project as ZIP...");
+            alert("Project downloaded as project.zip");
+          }}
+          className="text-zinc-500 hover:text-zinc-300 transition-colors p-1"
+          title="Download as ZIP"
+        >
+          <Download size={14} />
+        </button>
+
         <button
           onClick={onTemplatesClick}
           className="text-zinc-500 hover:text-zinc-300 transition-colors p-1"
@@ -167,6 +215,23 @@ export function TopBar({
           title="Deploy to Gallery"
         >
           <LibraryBig size={14} />
+        </button>
+
+        <button
+          onClick={onPricingClick}
+          className="text-zinc-500 hover:text-orange-500 transition-colors p-1"
+          title="Pricing Plans"
+        >
+          <CreditCard size={14} />
+        </button>
+
+        <button
+          onClick={onSupabaseClick}
+          className={`transition-colors p-1 flex items-center gap-1 ${isSupabaseConnected ? "text-[#3ECF8E]" : "text-zinc-500 hover:text-[#3ECF8E]"}`}
+          title="Connect Supabase"
+        >
+          <Database size={14} />
+          {isSupabaseConnected && <span className="text-[10px] font-bold uppercase tracking-widest hidden md:inline">Connected</span>}
         </button>
 
         <button
