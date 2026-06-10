@@ -30,23 +30,23 @@ export function Sidebar({ messages, onSendMessage }: SidebarProps) {
       <div className="p-4 border-b border-orange-900/20 flex flex-col gap-4 bg-zinc-950/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded bg-orange-600 flex items-center justify-center font-bold text-black border border-orange-500/50 shadow-[0_0_15px_rgba(237,57,21,0.4)]">
+            <div className="w-8 h-8 rounded flex items-center justify-center font-bold text-black border border-black/20 shadow-sm" style={{ backgroundColor: 'var(--color-primary)' }}>
               <Command size={18} />
             </div>
             <div>
-              <h1 className="text-sm font-semibold tracking-widest text-orange-500 uppercase">Ollama Agent</h1>
+              <h1 className="text-sm font-semibold tracking-widest uppercase" style={{ color: 'var(--color-primary)' }}>Ollama Agent</h1>
               <span className="text-[10px] text-zinc-500 tracking-widest uppercase">Workspace</span>
             </div>
           </div>
           
-          <div className="flex items-center gap-1.5 bg-orange-950/30 border border-orange-900/50 px-2 py-1 rounded shadow-inner">
-            <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_5px_rgba(237,57,21,0.8)]"></div>
-            <span className="text-[9px] uppercase tracking-widest text-orange-400 font-bold">Godmode</span>
+          <div className="flex items-center gap-1.5 bg-black/30 border border-white/5 px-2 py-1 rounded shadow-inner">
+            <div className="w-1.5 h-1.5 rounded-full animate-pulse shadow-sm" style={{ backgroundColor: 'var(--color-primary)' }}></div>
+            <span className="text-[9px] uppercase tracking-widest font-bold" style={{ color: 'var(--color-primary)' }}>Godmode</span>
           </div>
         </div>
         
         {/* Model Selector Dropdown */}
-        <select className="w-full bg-[#050505] border border-orange-900/30 text-orange-500 text-[11px] font-mono rounded px-2 py-2 outline-none focus:border-orange-500/50 transition-colors uppercase tracking-widest cursor-pointer hover:bg-[#0a0a0a]">
+        <select className="w-full bg-[#050505] border border-white/10 text-[11px] font-mono rounded px-2 py-2 outline-none transition-colors uppercase tracking-widest cursor-pointer hover:bg-[#0a0a0a]" style={{ color: 'var(--color-primary)' }}>
           <option>🔥 llama3-lexi (Godmode)</option>
           <option>mixtral:8x7b</option>
           <option>llama3.1:8b</option>
@@ -72,11 +72,13 @@ export function Sidebar({ messages, onSendMessage }: SidebarProps) {
                 {msg.role === 'user' ? 'User' : 'Assistant'}
               </span>
               <div className={cn(
-                "p-3 rounded-lg text-sm",
+                "p-3 rounded-lg text-sm transition-all duration-300",
                 msg.role === 'user' 
-                  ? "bg-orange-600/10 border border-orange-600/20" 
+                  ? "border border-white/10" 
                   : "bg-zinc-800/50 border border-zinc-700/50 leading-relaxed"
-              )}>
+              )}
+              style={msg.role === 'user' ? { backgroundColor: 'color-mix(in srgb, var(--color-primary) 15%, transparent)' } : {}}
+              >
                 {msg.content}
               </div>
             </div>
@@ -136,7 +138,8 @@ export function Sidebar({ messages, onSendMessage }: SidebarProps) {
             <button 
               onClick={handleSend}
               disabled={!input.trim()}
-              className="bg-orange-600 hover:bg-orange-500 text-black px-3 py-1.5 rounded-lg text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed uppercase"
+              style={{ backgroundColor: 'var(--color-primary)' }}
+              className="text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-opacity disabled:opacity-50 disabled:cursor-not-allowed uppercase"
             >
               Generate
             </button>

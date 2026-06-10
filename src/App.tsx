@@ -5,6 +5,8 @@ import { TopBar } from './components/TopBar';
 import { CodeEditor } from './components/CodeEditor';
 import { Preview } from './components/Preview';
 import { FloatingToolbar } from './components/FloatingToolbar';
+import { SettingsModal } from './components/SettingsModal';
+import { LoginModal } from './components/LoginModal';
 
 const INITIAL_CODE = `export default function App() {
   return (
@@ -29,6 +31,12 @@ export default function App() {
     }
     return true;
   });
+  
+  const [accentColor, setAccentColor] = useState('#ed3915');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [adminUser, setAdminUser] = useState<string | null>('nexusos@commandnexus.net');
+
   const [messages, setMessages] = useState<Message[]>([
     { id: '1', role: 'assistant', content: 'Hello! I am your AI Builder. What would you like to create today?', timestamp: Date.now() }
   ]);
@@ -67,7 +75,10 @@ export default function App() {
   };
 
   return (
-    <div className="flex w-full h-full bg-[#0a0a0a] text-gray-200">
+    <div 
+      className="flex w-full h-full bg-[#0a0a0a] text-gray-200" 
+      style={{ '--color-primary': accentColor } as React.CSSProperties}
+    >
       <Sidebar messages={messages} onSendMessage={handleSendMessage} />
       
       <main className="flex-1 flex flex-col min-w-0 relative">
@@ -76,6 +87,10 @@ export default function App() {
           onTabChange={setActiveTab} 
           isDarkMode={isDarkMode}
           onToggleDarkMode={() => setIsDarkMode(prev => !prev)}
+          onSettingsClick={() => setIsSettingsOpen(true)}
+          adminUser={adminUser}
+          onLoginClick={() => setIsLoginOpen(true)}
+          onLogout={() => setAdminUser(null)}
         />
         
         {/* Workspace Grid */}
@@ -108,6 +123,24 @@ export default function App() {
         
         <FloatingToolbar />
       </main>
+
+      {isSettingsOpen && (
+        <SettingsModal 
+          onClose={() => setIsSettingsOpen(false)} 
+          accentColor={accentColor}
+          onColorChange={setAccentColor}
+        />
+      )}
+
+      {isLoginOpen && (
+        <LoginModal 
+          onClose={() => setIsLoginOpen(false)} 
+          onLogin={(email) => {
+            setAdminUser(email);
+            setIsLoginOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -4,48 +4,74 @@ export function TopBar({
   activeTab, 
   onTabChange,
   isDarkMode,
-  onToggleDarkMode
+  onToggleDarkMode,
+  onSettingsClick,
+  adminUser,
+  onLoginClick,
+  onLogout
 }: { 
   activeTab: 'split' | 'code' | 'preview';
   onTabChange: (tab: 'split' | 'code' | 'preview') => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
+  onSettingsClick: () => void;
+  adminUser: string | null;
+  onLoginClick: () => void;
+  onLogout: () => void;
 }) {
   return (
     <nav className="h-12 bg-[#0a0a0a] border-b border-zinc-800 flex items-center px-4 gap-6 shrink-0">
       <div className="flex gap-1 h-full">
         <button 
           onClick={() => onTabChange('split')} 
-          className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest flex items-center transition-all ${activeTab === 'split' ? 'border-b-2 border-orange-500 text-orange-400 bg-orange-500/5' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'}`}
+          style={activeTab === 'split' ? { color: 'var(--color-primary)', borderBottomColor: 'var(--color-primary)', backgroundColor: 'color-mix(in srgb, var(--color-primary) 5%, transparent)' } : {}}
+          className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest flex items-center transition-all ${activeTab === 'split' ? 'border-b-2' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'}`}
         >
           Split
         </button>
         <button 
           onClick={() => onTabChange('code')} 
-          className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest flex items-center transition-all ${activeTab === 'code' ? 'border-b-2 border-orange-500 text-orange-400 bg-orange-500/5' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'}`}
+          style={activeTab === 'code' ? { color: 'var(--color-primary)', borderBottomColor: 'var(--color-primary)', backgroundColor: 'color-mix(in srgb, var(--color-primary) 5%, transparent)' } : {}}
+          className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest flex items-center transition-all ${activeTab === 'code' ? 'border-b-2' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'}`}
         >
           Code
         </button>
         <button 
           onClick={() => onTabChange('preview')} 
-          className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest flex items-center transition-all ${activeTab === 'preview' ? 'border-b-2 border-orange-500 text-orange-400 bg-orange-500/5' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'}`}
+          style={activeTab === 'preview' ? { color: 'var(--color-primary)', borderBottomColor: 'var(--color-primary)', backgroundColor: 'color-mix(in srgb, var(--color-primary) 5%, transparent)' } : {}}
+          className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest flex items-center transition-all ${activeTab === 'preview' ? 'border-b-2' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'}`}
         >
           Preview
         </button>
       </div>
 
       <div className="ml-auto flex items-center gap-3">
-        <div className="flex items-center gap-2 mr-2 px-3 py-1 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-          <div className="w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-500 border border-orange-500/30">
-            <User size={14} />
+        {adminUser ? (
+          <div className="flex items-center gap-2 mr-2 px-3 py-1 bg-zinc-900/50 border border-zinc-800 rounded-lg">
+            <div className="w-6 h-6 rounded-full flex items-center justify-center border shadow-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--color-primary) 20%, transparent)', color: 'var(--color-primary)', borderColor: 'color-mix(in srgb, var(--color-primary) 30%, transparent)' }}>
+              <User size={14} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] text-gray-200 leading-none mb-0.5">{adminUser}</span>
+              <span className="text-[8px] font-bold uppercase tracking-widest flex items-center gap-1" style={{ color: 'var(--color-primary)' }}>
+                <Shield size={8} /> Admin
+              </span>
+            </div>
+            <button onClick={onLogout} className="ml-2 text-[9px] text-zinc-500 hover:text-zinc-300 uppercase tracking-widest font-bold">Logout</button>
           </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] text-gray-200 leading-none mb-0.5">nexusos@commandnexus.net</span>
-            <span className="text-[8px] text-orange-500 font-bold uppercase tracking-widest flex items-center gap-1">
-              <Shield size={8} /> Admin
-            </span>
-          </div>
-        </div>
+        ) : (
+          <button onClick={onLoginClick} className="mr-2 text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-1" style={{ color: 'var(--color-primary)' }}>
+            <Shield size={12} /> Admin Login
+          </button>
+        )}
+
+        <button 
+          onClick={onSettingsClick}
+          className="text-zinc-500 hover:text-zinc-300 transition-colors p-1"
+          title="Settings"
+        >
+          <Settings size={14} />
+        </button>
 
         <button 
           onClick={onToggleDarkMode}
