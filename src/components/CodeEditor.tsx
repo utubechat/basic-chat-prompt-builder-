@@ -10,25 +10,25 @@ interface CodeEditorProps {
 export function CodeEditor({ code, onChange }: CodeEditorProps) {
   const editorRef = useRef<any>(null);
   const [isConsoleOpen, setIsConsoleOpen] = useState(false);
-  const [logs, setLogs] = useState<{type: 'log'|'error'|'warn'|'info', message: string}[]>([
-    { type: 'info', message: 'Ready to build.' }
-  ]);
+  const [logs, setLogs] = useState<
+    { type: "log" | "error" | "warn" | "info"; message: string }[]
+  >([{ type: "info", message: "Ready to build." }]);
 
   const handleFormat = () => {
     if (editorRef.current) {
-      editorRef.current.getAction('editor.action.formatDocument').run();
+      editorRef.current.getAction("editor.action.formatDocument").run();
     }
   };
 
   const handleUndo = () => {
     if (editorRef.current) {
-      editorRef.current.trigger('keyboard', 'undo', null);
+      editorRef.current.trigger("keyboard", "undo", null);
     }
   };
 
   const handleRedo = () => {
     if (editorRef.current) {
-      editorRef.current.trigger('keyboard', 'redo', null);
+      editorRef.current.trigger("keyboard", "redo", null);
     }
   };
 
@@ -44,14 +44,14 @@ export function CodeEditor({ code, onChange }: CodeEditorProps) {
           </button>
         </div>
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={handleUndo}
             title="Undo"
             className="text-zinc-500 hover:text-orange-400 transition-colors"
           >
             <Undo2 size={13} />
           </button>
-          <button 
+          <button
             onClick={handleRedo}
             title="Redo"
             className="text-zinc-500 hover:text-orange-400 transition-colors"
@@ -59,15 +59,15 @@ export function CodeEditor({ code, onChange }: CodeEditorProps) {
             <Redo2 size={13} />
           </button>
           <div className="w-[1px] h-3 bg-zinc-800 mx-1"></div>
-          <button 
+          <button
             onClick={() => setIsConsoleOpen(!isConsoleOpen)}
             title="Toggle Console"
-            className={`flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-widest transition-colors ${isConsoleOpen ? 'text-orange-400' : 'text-zinc-500 hover:text-orange-400'}`}
+            className={`flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-widest transition-colors ${isConsoleOpen ? "text-orange-400" : "text-zinc-500 hover:text-orange-400"}`}
           >
             <TerminalSquare size={12} />
             Console
           </button>
-          <button 
+          <button
             onClick={handleFormat}
             title="Format Code"
             className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-widest text-zinc-500 hover:text-orange-400 transition-colors"
@@ -93,15 +93,18 @@ export function CodeEditor({ code, onChange }: CodeEditorProps) {
             scrollBeyondLastLine: false,
             smoothScrolling: true,
             cursorBlinking: "smooth",
+            renderLineHighlight: "all",
           }}
         />
-        
+
         {/* Console Drawer */}
         {isConsoleOpen && (
           <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-[#0a0a0a] border-t border-zinc-800 flex flex-col shadow-[0_-10px_20px_rgba(0,0,0,0.5)] z-10 animate-in slide-in-from-bottom-2">
             <div className="h-6 flex items-center justify-between px-3 border-b border-zinc-800 bg-[#0f0f0f]">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">Runtime Console</span>
-              <button 
+              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
+                Runtime Console
+              </span>
+              <button
                 onClick={() => setIsConsoleOpen(false)}
                 className="text-zinc-500 hover:text-zinc-300 transition-colors"
               >
@@ -111,18 +114,35 @@ export function CodeEditor({ code, onChange }: CodeEditorProps) {
             <div className="flex-1 overflow-y-auto p-2 font-mono text-[11px] space-y-1">
               {logs.map((log, i) => (
                 <div key={i} className="flex gap-2">
-                  <span className={`${
-                    log.type === 'error' ? 'text-red-500' : 
-                    log.type === 'warn' ? 'text-yellow-500' : 
-                    log.type === 'info' ? 'text-blue-400' : 'text-zinc-500'
-                  }`}>
-                    [{new Date().toLocaleTimeString([], {hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit'})}]
+                  <span
+                    className={`${
+                      log.type === "error"
+                        ? "text-red-500"
+                        : log.type === "warn"
+                          ? "text-yellow-500"
+                          : log.type === "info"
+                            ? "text-blue-400"
+                            : "text-zinc-500"
+                    }`}
+                  >
+                    [
+                    {new Date().toLocaleTimeString([], {
+                      hour12: false,
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}
+                    ]
                   </span>
-                  <span className={`${
-                    log.type === 'error' ? 'text-red-400 bg-red-500/10' : 
-                    log.type === 'warn' ? 'text-yellow-400 bg-yellow-500/10' : 
-                    'text-zinc-300'
-                  } px-1 rounded flex-1`}>
+                  <span
+                    className={`${
+                      log.type === "error"
+                        ? "text-red-400 bg-red-500/10"
+                        : log.type === "warn"
+                          ? "text-yellow-400 bg-yellow-500/10"
+                          : "text-zinc-300"
+                    } px-1 rounded flex-1`}
+                  >
                     {log.message}
                   </span>
                 </div>
