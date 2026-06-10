@@ -1,5 +1,5 @@
 import { X, Github, GitBranch, GitCommit, Check } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface GitHubModalProps {
   onClose: () => void;

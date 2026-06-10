@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Message } from "./types";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
@@ -10,6 +10,7 @@ import { LoginModal } from "./components/LoginModal";
 import { GitHubModal } from "./components/GitHubModal";
 import { TemplatesModal } from "./components/TemplatesModal";
 import { GalleryModal } from "./components/GalleryModal";
+import { ApiTester } from "./components/ApiTester";
 
 const INITIAL_CODE = `export default function App() {
   return (
@@ -26,9 +27,9 @@ const INITIAL_CODE = `export default function App() {
 }`;
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"split" | "code" | "preview">(
-    "split",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "split" | "code" | "preview" | "api"
+  >("split");
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("app-theme");
@@ -130,6 +131,11 @@ export default function App() {
               className={`relative min-h-0 flex flex-col bg-[#111] ${activeTab === "preview" ? "flex-1" : ""}`}
             >
               <Preview />
+            </div>
+          )}
+          {activeTab === "api" && (
+            <div className="relative min-h-0 flex flex-col flex-1">
+              <ApiTester />
             </div>
           )}
         </div>

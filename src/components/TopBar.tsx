@@ -29,8 +29,8 @@ export function TopBar({
   onLoginClick,
   onLogout,
 }: {
-  activeTab: "split" | "code" | "preview";
-  onTabChange: (tab: "split" | "code" | "preview") => void;
+  activeTab: "split" | "code" | "preview" | "api";
+  onTabChange: (tab: "split" | "code" | "preview" | "api") => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
   onSettingsClick: () => void;
@@ -91,6 +91,22 @@ export function TopBar({
           className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest flex items-center transition-all ${activeTab === "preview" ? "border-b-2" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"}`}
         >
           Preview
+        </button>
+        <button
+          onClick={() => onTabChange("api")}
+          style={
+            activeTab === "api"
+              ? {
+                  color: "var(--color-primary)",
+                  borderBottomColor: "var(--color-primary)",
+                  backgroundColor:
+                    "color-mix(in srgb, var(--color-primary) 5%, transparent)",
+                }
+              : {}
+          }
+          className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest flex items-center transition-all ${activeTab === "api" ? "border-b-2" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"}`}
+        >
+          API
         </button>
       </div>
 
