@@ -1,0 +1,6 @@
+{
+  "name": "BuildStudio",
+  "description": "An AI IDE with chat input, live preview, and code editor featuring a dark orange theme.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
