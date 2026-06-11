@@ -2,8 +2,46 @@ import { RefreshCw, ExternalLink, Monitor, Smartphone } from "lucide-react";
 import { useState } from "react";
 import { cn } from "../lib/utils";
 
-export function Preview() {
+interface PreviewProps {
+  code?: string;
+}
+
+export function Preview({ code }: PreviewProps) {
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
+  const [key, setKey] = useState(0);
+
+  const srcDoc = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.client.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect, useMemo, useCallback, useRef } = React;
+    
+    try {
+      // Remove imports
+      let userCode = \`${(code || '').replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`;
+      userCode = userCode.replace(/import\\s+[\\s\\S]*?(?:from\\s+)?['"][^'"]+['"];?\\n*/g, '');
+      userCode = userCode.replace(/export\\s+default\\s+(function\\s+App|App)/g, 'function App');
+      
+      const transformed = Babel.transform(userCode, { presets: ['react', 'env'] }).code;
+      eval(transformed + '\\n\\nconst root = ReactDOM.createRoot(document.getElementById("root")); root.render(React.createElement(App));');
+    } catch (err) {
+      document.getElementById('root').innerHTML = '<div style="color: red; padding: 20px; font-family: monospace;">' + err.toString() + '</div>';
+      console.error(err);
+    }
+  </script>
+</body>
+</html>
+  `;
 
   return (
     <div className="w-full h-full flex items-center justify-center p-8 bg-[#111]">
@@ -26,7 +64,7 @@ export function Preview() {
             <span className="text-[10px] text-orange-500/60 font-mono tracking-widest uppercase truncate">
               localhost:3000
             </span>
-            <button className="text-orange-500/60 hover:text-orange-500 transition-colors">
+            <button onClick={() => setKey(k => k + 1)} className="text-orange-500/60 hover:text-orange-500 transition-colors">
               <RefreshCw size={12} />
             </button>
           </div>
@@ -60,16 +98,14 @@ export function Preview() {
           </div>
         </div>
 
-        <div className="flex-1 bg-[#050505] relative overflow-hidden">
-          {/* Simulated Preview Content */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <div className="w-8 h-8 border-2 border-zinc-800 border-t-orange-500 rounded-full animate-spin mx-auto" />
-              <p className="text-[10px] text-zinc-500 tracking-widest uppercase font-mono">
-                Building preview...
-              </p>
-            </div>
-          </div>
+        <div className="flex-1 bg-white relative overflow-hidden">
+          <iframe 
+            key={key}
+            srcDoc={srcDoc}
+            className="w-full h-full border-none outline-none"
+            title="preview"
+            sandbox="allow-scripts allow-same-origin"
+          />
         </div>
       </div>
     </div>

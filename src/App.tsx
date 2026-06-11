@@ -83,7 +83,20 @@ export default function App() {
   const isSupabaseConnected = secrets.some(s => s.key === "SUPABASE_URL" && s.value.trim() !== "");
 
   const [messages, setMessages] = useState<Message[]>([]);
-  const [code, setCode] = useState(INITIAL_CODE);
+  const [code, setCode] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedCode = localStorage.getItem("buildstudio-code-save");
+      if (savedCode) return savedCode;
+    }
+    return INITIAL_CODE;
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      localStorage.setItem("buildstudio-code-save", code);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [code]);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -192,7 +205,7 @@ export default function App() {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="relative min-h-0 flex flex-col bg-[#111]"
               >
-                <Preview />
+                <Preview code={code} />
               </motion.div>
             )}
 
