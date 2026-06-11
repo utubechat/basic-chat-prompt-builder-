@@ -18,3 +18,8 @@
 body {
   @apply bg-dark-bg text-gray-100 h-screen overflow-hidden font-sans;
 }
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}

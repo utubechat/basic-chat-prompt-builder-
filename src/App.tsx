@@ -140,7 +140,7 @@ export default function App() {
 
   return (
     <div
-      className="flex w-full h-full bg-[#0a0a0a] text-gray-200"
+      className="flex w-full h-screen bg-[#0a0a0a] text-gray-200 overflow-hidden"
       style={{ "--color-primary": accentColor } as React.CSSProperties}
     >
       <Sidebar messages={messages} onSendMessage={handleSendMessage} />
